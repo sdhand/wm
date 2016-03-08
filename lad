@@ -2,7 +2,7 @@
 # le (window) advent daemon
 # ^ backronym, I just wanted to make the "exec wew | lad" pun on my xinitrc
 
-. $XDG_CONFIG_HOME/wm.conf
+. $HOME/.config/wm.conf
 
 while IFS=": " read ev wid; do
 	case $ev in

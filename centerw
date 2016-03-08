@@ -1,7 +1,7 @@
 #!/bin/sh
 # center current window
 
-. $XDG_CONFIG_HOME/wm.conf
+. $HOME/.config/wm.conf
 
 # get current window id, width and height
 WID=$(<$MNT/focused)

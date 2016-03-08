@@ -2,7 +2,7 @@
 # window mangler
 # differences from groaw: it keeps track of which groups are active in the filesystem
 
-. $XDG_CONFIG_HOME/wm.conf
+. $HOME/.config/wm.conf
 
 usage() {
 	echo "$(basename $0) [-adsth <group number>]"
