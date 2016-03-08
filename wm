@@ -20,7 +20,7 @@ removeFromGroup() {
 showGroup() {
 	for file in $WMGROUPS/$1/*; do
 			wid=$(basename $file)
-			mapw -m $wid
+			echo true > $MNT/$wid/mapped
 	done
 	echo 1 > $WMSTATUS/$1
 }
@@ -28,7 +28,7 @@ showGroup() {
 hideGroup() {
 	for file in $WMGROUPS/$1/*; do
 			wid=$(basename $file)
-			mapw -u $wid
+			echo false > $MNT/$wid/mapped
 	done
 	echo 0 > $WMSTATUS/$1
 }
@@ -37,7 +37,7 @@ toggleGroup() {
 	wid=$(ls -1 $WMGROUPS/$1 | sed 1q)
 
 	test -z "$wid" && return
-	wattr m $wid \
+	$(<$MNT/$wid/mapped) \
 		&& hideGroup $1 \
 		|| showGroup $1
 }
@@ -52,7 +52,7 @@ checkGroups() {
 
 	for file in $(find $WMGROUPS -type f); do
 		wid=$(basename $file)
-		wattr $wid || rm -f $file
+		[ -e $MNT/$wid ] || rm -f $file
 	done
 
 	for ws in $(seq 1 $GROUPS); do

@@ -2,18 +2,20 @@
 # le (window) advent daemon
 # ^ backronym, I just wanted to make the "exec wew | lad" pun on my xinitrc
 
-while IFS=: read ev wid; do
+. $XDG_CONFIG_HOME/wm.conf
+
+while IFS=": " read ev wid; do
 	case $ev in
 		# Focus new windows
-		16) wattr o $wid || focusw $wid ;;
+		CREATE) $(<$MNT/$wid/ignored) || echo $wid > $MNT/focused ;;
 
 		# Mapping requests
-		19) wattr o $wid || focusw $wid ;;
+		MAP) $(<$MNT/$wid/ignored) || echo $wid > $MNT/focused  ;;
 
 		# Focus next window when deleting current window
-		18) wattr $(pfw) || focusw prev 2>/dev/null;;
+		DESTROY) [ -e $MNT/$(<$MNT/focused) ] || focusw prev 2>/dev/null ;;
 
 		# Focus entered window
-		7) wattr o $wid || focusw $wid ;;
+		ENTER)  $(<$MNT/$wid/ignored) || echo $wid > $MNT/focused ;;
 	esac
 done

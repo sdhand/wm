@@ -3,15 +3,22 @@
 
 . $XDG_CONFIG_HOME/wm.conf
 
-H=$(wattr h $(lsw -r))
-W=$(wattr w $(lsw -r))
+function move_window {
+	echo $1>$MNT/$5/geometry/x
+	echo $2>$MNT/$5/geometry/y
+	echo $3>$MNT/$5/geometry/width
+	echo $4>$MNT/$5/geometry/height
+}
+
+H=$(<$MNT/root/geometry/height)
+W=$(<$MNT/root/geometry/width)
 
 # this file is used to store the previous geometry of a window
 FSFILE=$TMPDIR/wm/zoom
 
 # if any window is zoomed, unset its state
 # so no window will lose their previous geometry info
-test -f $FSFILE && wtp $(cat $FSFILE)
+test -f $FSFILE && move_window $(cat $FSFILE)
 
 # if this file exists and contains a window id, that window is zoomed
 if test -f $FSFILE && grep -q $1 $FSFILE; then
@@ -20,10 +27,10 @@ if test -f $FSFILE && grep -q $1 $FSFILE; then
 	rm -f $FSFILE
 else
 	# save geometry and id
-	wattr xywhi $1 > $FSFILE
+	echo $(<$MNT/$1/geometry/x) $(<$MNT/$1/geometry/y) $(<$MNT/$1/geometry/width) $(<$MNT/$1/geometry/height) $1 > $FSFILE
 	# zoom the current window
-	wtp $GAP $((PANELHEIGHT + GAP)) $((W - 2*GAP - 2*BORDERWIDTH)) $((H - 2*GAP - PANELHEIGHT - 2*BORDERWIDTH)) $1
+	move_window $GAP $((PANELHEIGHT + GAP)) $((W - 2*GAP - 2*BORDERWIDTH)) $((H - 2*GAP - PANELHEIGHT - 2*BORDERWIDTH)) $1
 fi
 
 # focus the window
-focusw $1
+echo $1 > $MNT/focused

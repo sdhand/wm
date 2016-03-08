@@ -7,22 +7,24 @@ a=0xb8b8c8 # active border color
 i=0x1a1a26 # inactive border color
 
 # get current window id
-c=$(pfw)
+c=$(<$MNT/focused)
 
 setborder() {
 	# check if window exists
-	wattr $2 || return
+	[ -e $MNT/$2 ] || return
+	
+	echo $BORDERWIDTH > $MNT/$2/border/width
 
 	case $1 in
-		active)   chwb -s$BORDERWIDTH -c$a $2 ;;
-		inactive) chwb -s$BORDERWIDTH -c$i $2 ;;
+		active)	echo $a > $MNT/$2/border/color ;;
+		inactive) echo $i > $MNT/$2/border/color ;;
 	esac
 }
 
 case $1 in
-	next) wid=$(lsw|grep -v $c|sed '1 p;d') ;;
-	prev) wid=$(lsw|grep -v $c|sed '$ p;d') ;;
-	0x*) wattr $1 && wid=$1 ;;
+	next) wid=$(ls $MNT|grep -v $c|grep -v root|grep -v event|grep -v focused|sed '1 p;d') ;;
+	prev) wid=$(ls $MNT|grep -v $c|grep -v root|grep -v event|grep -v focused|sed '$ p;d') ;;
+	0x*) [ -e $MNT/$1 ] && wid=$1 ;;
 esac
 
 # exit if another window to focus can't be found
@@ -33,6 +35,6 @@ setborder inactive $c
 # activate the new window
 setborder active $wid
 # put it on top of the stack
-chwso -r $wid
+echo raise > $MNT/$wid/stack
 # set focus on it
-wtf $wid
+echo $wid > $MNT/focused

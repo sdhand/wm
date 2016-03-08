@@ -3,21 +3,23 @@
 
 . $XDG_CONFIG_HOME/wm.conf
 
-CUR=${2:-$(pfw)}
-ROOT=$(lsw -r)
-SW=$(wattr w $ROOT)
-SH=$(wattr h $ROOT)
+FOCUS=$(<$MNT/focused)
+CUR=${2:-$(<$MNT/focused)}
+SW=$(<$MNT/root/geometry/width)
+SH=$(<$MNT/root/geometry/height)
 
-BW=$(wattr b $CUR)
-W=$(wattr w $CUR)
-H=$(wattr h $CUR)
+BW=$(<$MNT/$CUR/border/width)
+W=$(<$MNT/$CUR/geometry/width)
+H=$(<$MNT/$CUR/geometry/height)
 
 case $1 in
-	tl) X=$GAP Y=$((GAP + PANELHEIGHT)) ;;
-	tr) X=$((SW - W - BW*2 - GAP)) Y=$((GAP + PANELHEIGHT)) ;;
-	bl) X=$GAP Y=$((SH - H - BW*2 - GAP)) ;;
-	br) X=$((SW - W - BW*2 - GAP)) Y=$((SH - H - BW*2 - GAP)) ;;
-	*) echo "no position specified" ;;
+	tl)	X=$GAP Y=$((GAP + PANELHEIGHT)) ;;
+	tr)	X=$((SW - W - BW*2 - GAP)) Y=$((GAP + PANELHEIGHT)) ;;
+	bl)	X=$GAP Y=$((SH - H - BW*2 - GAP)) ;;
+	br)	X=$((SW - W - BW*2 - GAP)) Y=$((SH - H - BW*2 - GAP)) ;;
+	*)	echo "no position specified" 
+		exit ;;
 esac
 
-wtp $X $Y $W $H $CUR
+echo $X > $MNT/$CUR/geometry/x
+echo $Y > $MNT/$CUR/geometry/y
